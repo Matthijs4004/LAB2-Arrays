@@ -7,14 +7,18 @@ const pricesArray = {
     'slagroom' : 0.50, // extra kosten
     'sprinkels' : 0.30, // per bolletje
     'caramelB' : 0.90, // prijs bij een bakje
-    'caramelH' : 0.60 // prijs bij een hoorntje
+    'caramelH' : 0.60, // prijs bij een hoorntje
+    'liter' : 9.80
 }
-const toppingArray = {
+let businessArray = {
+    'liter' : 0
+}
+let toppingArray = {
     'sprinkels' : 0,
     'caramel' : 0,
     'slagroom' : 0,
 }
-const holderArray = {
+let holderArray = {
     'bakje' : 0,
     'hoorntje' : 0
 }
@@ -23,10 +27,12 @@ let bolletjesArray = {
 }
 let bakje = false
 let hoorntje = false
-let flavor, holder, topping, again, bolletjesAantal
+let flavor, holder, topping, again, bolletjesAantal, literInput, market
+let body = document.querySelector( 'body' )
 
 // Execute first step
-stepOne()
+start()
+//stepOne()
 
 function stepOne() 
 {
@@ -120,12 +126,12 @@ function orderMore()
         receipt()
     } else {
         alert( "Het programma kan dit antwoord niet doorvoeren, probeer opnieuw" )
+        orderMore()
     }
 }
 
 function receipt() 
 {
-    let body = document.querySelector( 'body' )
     let sprinkelsPrice = bolletjesArray[ 'bolletjes' ] * pricesArray[ 'sprinkels' ]
     let bolletjesPrice = parseFloat( ( bolletjesArray[ 'bolletjes' ] * pricesArray[ 'bolletje' ] ).toFixed(2) )
     let totalPrice = parseFloat(bolletjesPrice) + parseFloat( holderArray[ 'bakje' ] * pricesArray[ 'bakje' ] ) + parseFloat( holderArray[ 'hoorntje' ] * pricesArray[ 'hoorntje' ] ) + parseFloat( toppingArray[ 'slagroom' ] * pricesArray[ 'slagroom' ] )
@@ -161,4 +167,48 @@ function receipt()
     body.innerHTML += "<p>Totaal: €" + totalPrice.toFixed(2) + "</p>"
 }
 
+function start() {
+    market = prompt( "Bent u A) particulier of B) zakelijk" )
+    if ( market.toLowerCase() === "a" ) {
+        stepOne()
+    } else if ( market.toLowerCase() === "b" ) {
+        businessStepOne()
+    } else {
+        alert( "Het programma kan dit antwoord niet doorvoeren, probeer opnieuw" )
+        start()
+    }
+}
+function businessStepOne() {
+    literInput = prompt( "Hoeveel liter ijs wilt u? (heel getal)" )
+    businessArray[ 'liter' ] += parseInt( literInput )
+    if ( literInput > 1 ) {
+        businessFlavorChoice()
+    } else {
+        alert( "Het programma kan dit antwoord niet doorvoeren, probeer opnieuw" )
+        businessArray[ 'liter' ] -= parseInt( literInput )
+        businessStepOne()
+    }
+
+}
+function businessFlavorChoice() {
+    for ( let i = 1; i < parseInt( literInput ) + 1; i++) {
+        flavor = prompt( "Welke smaak wilt u voor liter nummer " + i + "? A) Aardbei, C) Chocolade of V) Vanille" )
+    }
+    if ( flavor.toLowerCase() === "a" || flavor.toLowerCase() === "c" || flavor.toLowerCase() === "v") {
+        businessReceipt()
+    } else {
+        alert( "Het programma kan dit antwoord niet doorvoeren, probeer opnieuw" )
+        businessFlavorChoice()
+    }
+}
+function businessReceipt() {
+    let literPrice = businessArray[ 'liter' ] * pricesArray[ 'liter' ]
+    let quotient = literPrice / 100
+    let procent = quotient * 6
+
+    body.innerHTML += "<p>----------Papi Gelato----------</p>"
+    body.innerHTML += "<p>Liter&nbsp " + businessArray[ 'liter' ] + " x " + pricesArray[ 'liter' ] + " = €" + literPrice.toFixed(2) + "</p><br />"
+    body.innerHTML += "<p>Totaal&nbsp = €" + literPrice.toFixed(2) + "</p>"
+    body.innerHTML += "<p>BTW (6%)&nbsp = €" + procent.toFixed(2) + "</p>"
+}
 });
